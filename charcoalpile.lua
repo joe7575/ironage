@@ -109,7 +109,7 @@ end
 
 function ironage.keep_running_pile(pos)
 	local meta = minetest.get_meta(pos)
-	print("running", meta:get_int("running"), "ignite", meta:get_int("ignite"), "gametime", minetest.get_gametime())
+	--print("running", meta:get_int("running"), "ignite", meta:get_int("ignite"), "gametime", minetest.get_gametime())
 	if meta:get_int("running") == 0 then
 		if num_wood(pos) == 26 and num_dirt(pos) == 98 then
 			minetest.get_node_timer(pos):stop()
@@ -156,14 +156,14 @@ minetest.register_node("ironage:dirt_with_ash", {
 minetest.register_node("ironage:charcoalblock_burn", {
 	tiles = {"ironage_charcoal_burn.png"},
 	after_place_node = function(pos)
-		minetest.get_node_timer(pos):start(math.random(60, 120))
+		minetest.get_node_timer(pos):start(math.random(120, 160))
 	end,
 	on_timer = function(pos)
 		minetest.remove_node(pos)
 		make_dirt_with_ash(pos)
 		return false
 	end,
-	--drop = "",
+	drop = "",
 	light_source = 10,
 	is_ground_content = false,
 	groups = {cracky = 3, falling_node = 1},
