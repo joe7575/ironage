@@ -10,19 +10,35 @@
 
 ]]--
 
-local MELTING_TIME = 2
+-- Load support for intllib.
+local MP = minetest.get_modpath("ironage")
+local S, NS = dofile(MP.."/intllib.lua")
 
-local function stacklist_dbg(lists)
-	for _,item in ipairs(lists) do
-		print(item:get_name(), item:get_count())
-	end
-end
+local SMELTING_TIME = 2
 
-local Recipes = {}
-local KeyList = {}
-local NumRecipes = 0
+local Tabs = S("Menu,Recipes,Pile,Burner")
 
-local BurnerImages = {
+local PileHelp = S([[Coal Pile Instructions:
+- build a 5x5 block dirt base
+- place a lighter in the centre
+- build a 3x3x3 wood cube around
+- cover all with dirt to a 5x5x5 cube
+- keep a hole to the lighter
+- ignite the lighter
+- close the pile with one wood and one dirt
+- wait until the smoke disappears
+- now you can open the pile]])
+
+local BurnerHelp = S([[Coal Burner Instructions:
+- build a cobble tower 
+    (3x3 blocks base with variable height)
+- keep a hole open on one side
+- put a lighter in
+- fill the tower from the top with charcoal
+- ignite the lighter
+- place the pot into the flame]])
+
+local PileImages = {
 	"default_dirt", "default_dirt", "default_dirt",    "default_dirt", "default_dirt",
 	"default_dirt", "default_wood", "default_wood",    "default_wood", "default_dirt",
 	"default_dirt", "default_wood", "default_wood",    "default_wood", "default_dirt",
@@ -30,22 +46,49 @@ local BurnerImages = {
 	"default_dirt", "default_dirt", "default_dirt",    "default_dirt", "default_dirt",
 }
 
+local BurnerImages = {
+	false, false, "default_cobble", "ironage_charcoal", "default_cobble",
+	false, false, "default_cobble", "ironage_charcoal", "default_cobble",
+	false, false, "default_cobble", "ironage_charcoal", "default_cobble",
+	false, false, false,            "ironage_lighter",  "default_cobble",
+	false, false, "default_cobble", "default_cobble",   "default_cobble",
+}
+
+local Recipes = {}
+local KeyList = {}
+local NumRecipes = 0
+local Cache = {}
+
+local function draw(images)
+	local tbl = {}
+	for y=0,4 do
+		for x=0,4 do
+			local idx = 1 + x + y * 5
+			local img = images[idx]
+			if img ~= false then
+				tbl[#tbl+1] = "image["..(x*0.8)..","..(y*0.8)..";0.8,0.8;"..img..".png]"
+			end
+		end
+	end
+	return table.concat(tbl)
+end	
+
 local formspec1 = 
-	"size[8,8.5]"..
+	"size[8,8]"..
 	default.gui_bg..
 	default.gui_bg_img..
 	default.gui_slots..
-	"tabheader[0,0;tab;Inventory,Recipes,Burner,Pile;1;;true]"..
-	"label[1,0.2;Inventory]"..
+	"tabheader[0,0;tab;"..Tabs..";1;;true]"..
+	"label[1,0.2;"..S("Menu").."]"..
 	
 	"container[1,1]"..
 	"list[current_name;src;0,0;2,2;]"..
-	"item_image[2.1,0;0.8,0.8;ironage:meltingpot]"..
-	"image[2,0.6;1,1;gui_furnace_arrow_bg.png^[transformR270]"..
-	"list[current_name;dst;3,0;2,2;]"..
+	"item_image[2.6,0;0.8,0.8;ironage:meltingpot]"..
+	"image[2.3,0.6;1.6,1;gui_furnace_arrow_bg.png^[transformR270]"..
+	"list[current_name;dst;4,0;2,2;]"..
 	"container_end[]"..
 	
-	"list[current_player;main;0,4.5;8,4;]"..
+	"list[current_player;main;0,4;8,4;]"..
 	"listring[current_name;dst]"..
 	"listring[current_player;main]"..
 	"listring[current_name;src]"..
@@ -73,79 +116,78 @@ local function formspec2(idx)
 		output3 = output1
 		output4 = output1
 	end
-	return "size[8,8.5]"..
+	return "size[8,8]"..
 	default.gui_bg..
 	default.gui_bg_img..
 	default.gui_slots..
-	"tabheader[0,0;tab;Inventory,Recipes,Burner,Pile;2;;true]"..
-	"label[1,0.2;Melting Guide]"..
+	"tabheader[0,0;tab;"..Tabs..";2;;true]"..
+	"label[1,0.2;"..S("Melting Guide").."]"..
 	
 	"container[1,1]"..
 	"item_image_button[0,0;1,1;"..input1..";b1;]"..
 	"item_image_button[1,0;1,1;"..input2..";b2;]"..
 	"item_image_button[0,1;1,1;"..input3..";b3;]"..
 	"item_image_button[1,1;1,1;"..input4..";b4;]"..
-	"item_image[2.1,0;0.8,0.8;ironage:meltingpot]"..
-	"image[2,0.6;1,1;gui_furnace_arrow_bg.png^[transformR270]"..
-	"item_image_button[3,0;1,1;"..output1..";b5;]"..
-	"item_image_button[4,0;1,1;"..output2..";b6;]"..
-	"item_image_button[3,1;1,1;"..output3..";b7;]"..
-	"item_image_button[4,1;1,1;"..output4..";b8;]"..
-	"label[1,2.5;Recipe "..idx.." of "..NumRecipes.."]"..
-	"button[1,3;1,1;priv;<<]"..
-	"button[2,3;1,1;next;>>]"..
+	"item_image[2.6,0;0.8,0.8;ironage:meltingpot]"..
+	"image[2.3,0.6;1.6,1;gui_furnace_arrow_bg.png^[transformR270]"..
+	"item_image_button[4,0;1,1;"..output1..";b5;]"..
+	"item_image_button[5,0;1,1;"..output2..";b6;]"..
+	"item_image_button[4,1;1,1;"..output3..";b7;]"..
+	"item_image_button[5,1;1,1;"..output4..";b8;]"..
+	"label[2,2.5;Recipe "..idx.." of "..NumRecipes.."]"..
+	"button[2,3;1,1;priv;<<]"..
+	"button[3,3;1,1;next;>>]"..
 	"container_end[]"
 end
 
 
-local function blueprint(images)
-	local tbl = {}
-	for y=0,4 do
-		for x=0,4 do
-			local idx = 1 + x + y * 5
-			local img = images[idx]
-			tbl[#tbl+1] = "image["..(x*0.8)..","..(y*0.8)..";0.8,0.8;"..img..".png]"
-		end
-	end
-	return table.concat(tbl)
-end	
-
-local formspec3 =
-	"size[8,8.5]"..
+local formspec3 = 
+	"size[8,8]"..
 	default.gui_bg..
 	default.gui_bg_img..
 	default.gui_slots..
-	"tabheader[0,0;tab;Inventory,Recipes,Burner,Pile;3;;true]"..
-	"label[1,0.2;Coal Burner Blueprint]"..
-	
-	--"label[0,0;Coal Burner: 3x3xn cobble tower, lighter on the bottom]"..
-	--"label[0,0.6;Fill with coal, ignite the lighter, place the pot]"..
-	"container[2,4]"..
-	blueprint(BurnerImages)..
+	"tabheader[0,0;tab;"..Tabs..";3;;true]"..
+	"label[0,0;"..PileHelp.."]"..
+	"label[1,5;"..S("Cross-section")..":]"..
+	"container[4,4]"..
+	draw(PileImages)..
 	"container_end[]"
 
-local formspec4 =
-	"size[8,8.5]"..
+local formspec4 = 
+	"size[8,8]"..
 	default.gui_bg..
 	default.gui_bg_img..
 	default.gui_slots..
-	"tabheader[0,0;tab;Inventory,Recipes,Burner,Pile;4;;true]"..
-	"label[1,0.2;Coal Pile Blueprint]"..
-	
-	"label[0,0;Coal Pile: 5x5x5 dirt, 3x3x3 wood, one lighter]"..
-	"label[0,0.6;Ignite the lighter, close the pile, wait 2 days]"..
-	"label[0.5,1.5;1)]"..
-	"label[4.5,1.5;2)]"..
-	"label[0.5,5.2;3)]"..
-	"label[4.5,5.2;4)]"..
-	"image[1,1.5;4,4;ironage_pile1.png]"..
-	"image[5,1.5;4,4;ironage_pile2.png]"..
-	"image[1,5.2;4,4;ironage_pile3.png]"..
-	"image[5,5.2;4,4;ironage_pile4.png]"
+	"tabheader[0,0;tab;"..Tabs..";4;;true]"..
+	"label[0,0;"..BurnerHelp.."]"..
+	"label[1,5;"..S("Cross-section")..":]"..
+	"container[4,4]"..
+	draw(BurnerImages)..
+	"container_end[]"
 
---
--- Node callback functions that are the same for active and inactive furnace
---
+local function on_receive_fields(pos, formname, fields, sender)
+	--print("fields", dump(fields))
+	local meta = minetest.get_meta(pos)
+	local recipe_idx = meta:get_int("recipe_idx")
+	if recipe_idx == 0 then recipe_idx = 1 end
+	if fields.tab == "1" then
+		meta:set_string("formspec", formspec1)
+	elseif fields.tab == "2" then
+		meta:set_string("formspec", formspec2(recipe_idx))
+	elseif fields.tab == "3" then
+		meta:set_string("formspec", formspec3)
+	elseif fields.tab == "4" then
+		meta:set_string("formspec", formspec4)
+	elseif fields.next == ">>" then
+		recipe_idx = math.min(recipe_idx + 1, NumRecipes)
+		meta:set_int("recipe_idx", recipe_idx)
+		meta:set_string("formspec", formspec2(recipe_idx))
+	elseif fields.priv == "<<" then
+		recipe_idx = math.max(recipe_idx - 1, 1)
+		meta:set_int("recipe_idx", recipe_idx)
+		meta:set_string("formspec", formspec2(recipe_idx))
+	end
+end
 
 local function can_dig(pos, player)
 	local meta = minetest.get_meta(pos);
@@ -178,130 +220,152 @@ local function allow_metadata_inventory_take(pos, listname, index, stack, player
 	return stack:get_count()
 end
 
-local function swap_node(pos, name)
-	local node = minetest.get_node(pos)
-	if node.name == name then
-		return
-	end
-	node.name = name
-	minetest.swap_node(pos, node)
-end
-
 local function get_output(input)
 	table.sort(input)
 	local key = table.concat(input, "-")
 	return Recipes[key]
 end
 
-local function get_melting_result(srclist)
-	local result
+local function get_recipe(inv)
+	-- collect items
+	local items = {}
 	local input = {}
-	local new_src = {}
-	for idx,stack in ipairs(srclist) do
+	for _,stack in ipairs(inv:get_list("src")) do
 		if not stack:is_empty() then
 			table.insert(input, stack:get_name())
-			stack:take_item(1)
-			new_src[idx] = stack
-		else
-			new_src[idx] = nil
+			table.insert(items, ItemStack(stack:get_name()))
 		end
 	end
-	print("input", dump(input))
+	-- determine output
 	local output = get_output(input)
 	if output then
-		result = {
-			item = ItemStack(output.output.." "..output.number),
+		return {
+			items = items,
+			output = ItemStack(output.output.." "..output.number),
 			heat = output.heat,
+			time = output.time,
 		}
 	end
-		
-	return result, new_src
+	return nil
 end
 
-local function on_receive_fields(pos, formname, fields, sender)
-	print("fields", dump(fields))
+-- prepare recipe and store in table for faster access
+local function store_recipe_in_cache(pos)
+	local hash = minetest.hash_node_position(pos)
 	local meta = minetest.get_meta(pos)
-	local recipe_idx = meta:get_int("recipe_idx")
-	if recipe_idx == 0 then recipe_idx = 1 end
-	if fields.tab == "1" then
-		meta:set_string("formspec", formspec1)
-	elseif fields.tab == "2" then
-		meta:set_string("formspec", formspec2(recipe_idx))
-	elseif fields.tab == "3" then
-		meta:set_string("formspec", formspec3)
-	elseif fields.tab == "4" then
-		meta:set_string("formspec", formspec4)
-	elseif fields.next == ">>" then
-		recipe_idx = math.min(recipe_idx + 1, NumRecipes)
-		meta:set_int("recipe_idx", recipe_idx)
-		meta:set_string("formspec", formspec2(recipe_idx))
-	elseif fields.priv == "<<" then
-		recipe_idx = math.max(recipe_idx - 1, 1)
-		meta:set_int("recipe_idx", recipe_idx)
-		meta:set_string("formspec", formspec2(recipe_idx))
-	end
-end
-
-local function pot_node_timer(pos, elapsed)
-	local meta = minetest.get_meta(pos)
-	local src_time = meta:get_int("src_time")
-	src_time = src_time + elapsed
-	local heat = meta:get_int("heat")
-	heat = 4
 	local inv = meta:get_inventory()
-	local srclist
-	local result
-	local new_src
-	local update = true
-	while update do
-		update = false
-
-		srclist = inv:get_list("src")
-
-		-- Check if we have meltable content
-		local new_src
-		result, new_src = get_melting_result(srclist)
---		if result then
---			print("result")
---			stacklist_dbg({result.item})
---			stacklist_dbg(new_src)
---		end
-		-- Check if we have enough heat
-		if result and heat >= result.heat then
-			-- If there is a meltable item then check if it is ready yet
-			if src_time >= MELTING_TIME then
-				-- Place result in dst list if possible
-				if inv:room_for_item("dst", result.item) then
-					inv:add_item("dst", result.item)
-					inv:set_stack("src", 1, new_src[1])
-					inv:set_stack("src", 2, new_src[2])
-					inv:set_stack("src", 3, new_src[3])
-					src_time = src_time - MELTING_TIME
-					update = true
-				end
-			end
+	local recipe = get_recipe(inv)
+	if recipe then
+		Cache[hash] = recipe
+		return recipe
+	end
+	return false
+end
+	
+-- read value from the node below
+local function get_heat(pos)
+	local heat = 0
+	pos.y = pos.y - 1
+	local node = minetest.get_node(pos)
+	local meta = minetest.get_meta(pos)
+	pos.y = pos.y + 1
+	if minetest.get_item_group(node.name, "ironage_flame") > 0 then
+		heat = meta:get_int("heat")
+	end
+	return heat
+end
+	
+-- Start melting if heat>0 AND source items available
+function ironage.switch_to_active(pos)
+	local meta = minetest.get_meta(pos)
+	local heat = get_heat(pos)
+	local inv = meta:get_inventory()
+	
+	if heat > 0 and not inv:is_empty("src") then
+		if store_recipe_in_cache(pos) then
+			minetest.swap_node(pos, {name = "ironage:meltingpot_active"})
+			minetest.registered_nodes["ironage:meltingpot_active"].on_construct(pos)
+			meta:set_string("infotext", S("Melting Pot active (heat=")..heat..")")
+			minetest.get_node_timer(pos):start(2)
+			return true
 		end
 	end
+	return false
+end	
+
+-- Stop melting if heat==0 OR no source items available
+local function switch_to_inactive(pos)
+	local meta = minetest.get_meta(pos)
+	local heat = get_heat(pos)
+	local inv = meta:get_inventory()
 	
-	if srclist[1]:is_empty() and srclist[2]:is_empty() and srclist[3]:is_empty() then
-		src_time = 0
+	if heat == 0 or inv:is_empty("src") then
+		minetest.get_node_timer(pos):stop()
+		minetest.swap_node(pos, {name = "ironage:meltingpot"})
+		minetest.registered_nodes["ironage:meltingpot"].on_construct(pos)
+		meta:set_string("infotext", S("Melting Pot inactive"))
+		return true
 	end
-	--
-	-- Set meta values
-	--
-	meta:set_int("src_time", src_time)
-	meta:set_string("infotext", "Melting Pot: heat="..heat)
-	
---	if heat == 0 then
---		minetest.swap_node(pos, {name = "ironage:meltingpot"})
---		return false
---	end
+	return false
+end	
+
+
+-- check if inventory has all needed items
+local function contains_items(inv, listname, items)
+	for _,item in ipairs(items) do
+		if not inv:contains_item(listname, item) then
+			return false
+		end
+	end
 	return true
 end
 
+-- move recipe src items to dst output
+local function process(inv, recipe)
+	if contains_items(inv, "src", recipe.items) then
+		if inv:room_for_item("dst", recipe.output) then
+			for _,item in ipairs(recipe.items) do
+				inv:remove_item("src", item)
+			end
+			inv:add_item("dst", recipe.output)
+			return true
+		end	
+	end
+	return false
+end		
+
+local function smelting(pos, recipe, heat, elapsed)
+	local meta = minetest.get_meta(pos)
+	local inv = meta:get_inventory()
+	elapsed = elapsed + meta:get_int("leftover")
+	
+	while heat >= recipe.heat and elapsed >= recipe.time do
+		print("process", elapsed)
+		if process(inv, recipe) == false then 
+			meta:set_int("leftover", 0)
+			return 
+		end
+		elapsed = elapsed - recipe.time
+	end
+	meta:set_int("leftover", elapsed)
+	return true
+end
+
+local function pot_node_timer(pos, elapsed)
+	print("pot_node_timer", elapsed)
+	if switch_to_inactive(pos) == false then
+		local hash = minetest.hash_node_position(pos)
+		local heat = get_heat(pos)
+		local recipe = Cache[hash] or store_recipe_in_cache(pos)
+		if recipe then
+			return smelting(pos, recipe, heat, elapsed)
+		end
+	end
+	return false
+end
 
 minetest.register_node("ironage:meltingpot_active", {
-	description = "Melting Pot",
+	description = S("Melting Pot"),
 	tiles = {
 		{
 			image = "ironage_meltingpot_top_active.png",
@@ -313,7 +377,7 @@ minetest.register_node("ironage:meltingpot_active", {
 				length = 1,
 			},
 		},
-		"ironage_meltingpot.png",
+		"default_cobble.png^ironage_meltingpot.png",
 	},
 	drawtype = "nodebox",
 	node_box = {
@@ -339,10 +403,6 @@ minetest.register_node("ironage:meltingpot_active", {
 		inv:set_size('dst', 4)
 	end,
 	
-	after_place_node = function(pos)
-		minetest.get_node_timer(pos):start(5)
-	end,
-	
 	on_timer = function(pos, elapsed)
 		return pot_node_timer(pos, elapsed)
 	end,
@@ -351,17 +411,23 @@ minetest.register_node("ironage:meltingpot_active", {
 		on_receive_fields(pos, formname, fields, sender)
 	end,
 	
+	can_dig = can_dig,
+	
 	drop = "ironage:meltingpot",
 	is_ground_content = false,
 	groups = {cracky = 3},
 	sounds = default.node_sound_metal_defaults(),
+
+	allow_metadata_inventory_put = allow_metadata_inventory_put,
+	allow_metadata_inventory_move = allow_metadata_inventory_move,
+	allow_metadata_inventory_take = allow_metadata_inventory_take,
 })
 
 minetest.register_node("ironage:meltingpot", {
-	description = "Melting Pot",
+	description = S("Melting Pot"),
 	tiles = {
-		"ironage_meltingpot_top.png",
-		"ironage_meltingpot.png",
+		"default_cobble.png",
+		"default_cobble.png^ironage_meltingpot.png",
 	},
 	drawtype = "nodebox",
 	node_box = {
@@ -378,41 +444,75 @@ minetest.register_node("ironage:meltingpot", {
 		type = "fixed",
 		fixed = {-10/16, -8/16, -10/16, 10/16, 9/16, 10/16},
 	},
+	
 	on_construct = function(pos)
 		local meta = minetest.get_meta(pos)
 		meta:set_string("formspec", formspec1)
+		meta:set_string("infotext", S("Melting Pot inactive"))
 		local inv = meta:get_inventory()
 		inv:set_size('src', 4)
 		inv:set_size('dst', 4)
 	end,
+	
+	on_metadata_inventory_move = function(pos)
+		if store_recipe_in_cache(pos) then
+			ironage.switch_to_active(pos)
+		end
+	end,
+	
+	on_metadata_inventory_put = function(pos)
+		if store_recipe_in_cache(pos) then
+			ironage.switch_to_active(pos)
+		end
+	end,
+	
 	on_receive_fields = function(pos, formname, fields, sender)
 		on_receive_fields(pos, formname, fields, sender)
 	end,
+	
+	can_dig = can_dig,
+	
 	is_ground_content = false,
 	groups = {cracky = 3},
 	sounds = default.node_sound_metal_defaults(),
+
+	allow_metadata_inventory_put = allow_metadata_inventory_put,
+	allow_metadata_inventory_move = allow_metadata_inventory_move,
+	allow_metadata_inventory_take = allow_metadata_inventory_take,
 })
 
-function ironage.register_recipe(input, output, heat)
-	if type(input) == "string" then
-		input = {input}
-	end
-	table.sort(input)
-	local key = table.concat(input, "-")
-	output = string.split(output, " ")
-	if not output[2] then output[2] = 1 end
-	output[3] = heat or 3
+minetest.register_craft({
+	output = "ironage:meltingpot",
+	recipe = {
+		{"default:cobble", "default:bronze_ingot", "default:cobble"},
+		{"default:cobble", "",                     "default:cobble"},
+		{"default:cobble", "default:cobble",       "default:cobble"},
+	},
+})
+
+unified_inventory.register_craft_type("melting", {
+	description = S("Melting"),
+	icon = "default_cobble.png^ironage_meltingpot.png",
+	width = 2,
+	height = 2,
+})
+
+function ironage.register_recipe(recipe)
+	table.sort(recipe.recipe)
+	local key = table.concat(recipe.recipe, "-")
+	local output = string.split(recipe.output, " ")
 	table.insert(KeyList, key)
 	Recipes[key] = {
-		input = input,
+		input = recipe.recipe,
 		output = output[1],
-		number = tonumber(output[2]),
-		heat = output[3],
+		number = tonumber(output[2] or 1),
+		heat = recipe.heat or 3,
+		time = recipe.time or 2,
 	}
 	NumRecipes = NumRecipes + 1
-	print("register_recipe", key, dump(output))
+
+	recipe.items = recipe.recipe
+	recipe.type = "melting"
+	unified_inventory.register_craft(recipe)
 end
 
-
-ironage.register_recipe("default:cobble", "default:obsidian", 4)
-ironage.register_recipe({"default:copper_lump", "default:mese_crystal_fragment"}, "default:gold_ingot", 3)

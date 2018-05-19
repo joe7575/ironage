@@ -10,11 +10,14 @@
 
 ]]--
 
+-- Load support for intllib.
+local MP = minetest.get_modpath("ironage")
+local S, NS = dofile(MP.."/intllib.lua")
 
 local function num_coal(pos)
 	local pos1 = {x=pos.x, y=pos.y+1, z=pos.z}
 	local pos2 = {x=pos.x, y=pos.y+32, z=pos.z}
-	local nodes = minetest.find_nodes_in_area(pos1, pos2, {"ironage:charcoalblock", "ironage:charcoalblock_burn"})
+	local nodes = minetest.find_nodes_in_area(pos1, pos2, {"ironage:charcoal", "ironage:charcoal_burn"})
 	return #nodes
 end
 
@@ -28,7 +31,7 @@ end
 local function start_burner(pos, height)
 	local pos1 = {x=pos.x-1, y=pos.y+1, z=pos.z-1}
 	local pos2 = {x=pos.x+1, y=pos.y+height, z=pos.z+1}
-	ironage.swap_nodes(pos1, pos2, "ironage:charcoalblock", "ironage:charcoalblock_burn")
+	ironage.swap_nodes(pos1, pos2, "ironage:charcoal", "ironage:charcoal_burn")
 end
 
 local function remove_flame(pos, height)
@@ -50,13 +53,16 @@ local function flame(pos, height, heat)
 		pos = {x=pos.x, y=pos.y+1, z=pos.z}
 		idx = math.min(idx, 7)
 		local node = minetest.get_node(pos)
+		if node.name == "ironage:meltingpot_active" then
+			return
+		end
 		if node.name == "ironage:meltingpot" then
+			ironage.switch_to_active(pos)
 			return
 		end
 		minetest.add_node(pos, {name = "ironage:flame"..idx})
 		local meta = minetest.get_meta(pos)
 		meta:set_int("heat", idx)
-		meta:set_string("infotext", idx)
 	end
 end
 
@@ -81,7 +87,7 @@ for idx,ratio in ipairs(lRatio) do
 		after_destruct = function(pos, oldnode)
 			pos.y = pos.y + 1
 			local node = minetest.get_node(pos)
-			if minetest.get_item_group(node.name, "myflame") > 0 then
+			if minetest.get_item_group(node.name, "ironage_flame") > 0 then
 				minetest.remove_node(pos)
 			end
 		end,
@@ -95,13 +101,13 @@ for idx,ratio in ipairs(lRatio) do
 		floodable = true,
 		sunlight_propagates = true,
 		damage_per_second = 4 + idx,
-		groups = {igniter = 2, dig_immediate = 3, myflame=1},
+		groups = {igniter = 2, dig_immediate = 3, ironage_flame=1},
 		drop = "",
 	})
 end
 
 minetest.register_node("ironage:ash", {
-	description = "Ash",
+	description = S("Ash"),
 	tiles = {"ironage_ash.png"},
 	drawtype = "nodebox",
 	node_box = {

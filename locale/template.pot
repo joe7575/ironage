@@ -1,0 +1,88 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-05-19 18:09+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: charcoalpile.lua
+msgid "Dirt with Ash"
+msgstr ""
+
+#: charcoalpile.lua
+msgid "Charcoal"
+msgstr ""
+
+#: coalburner.lua
+msgid "Ash"
+msgstr ""
+
+#: init.lua
+msgid "Lighter"
+msgstr ""
+
+#: meltingpot.lua
+msgid "Menu,Recipes,Pile,Burner"
+msgstr ""
+
+#: meltingpot.lua
+msgid ""
+"Coal Pile Instructions:\n"
+"- build a 5x5 block dirt base\n"
+"- place a lighter in the centre\n"
+"- build a 3x3x3 wood cube around\n"
+"- cover all with dirt to a 5x5x5 cube\n"
+"- keep a hole to the lighter\n"
+"- ignite the lighter\n"
+"- close the pile with one wood and one dirt\n"
+"- wait until the smoke disappears\n"
+"- now you can open the pile"
+msgstr ""
+
+#: meltingpot.lua
+msgid ""
+"Coal Burner Instructions:\n"
+"- build a cobble tower \n"
+"    (3x3 blocks base with variable height)\n"
+"- keep a hole open on one side\n"
+"- put a lighter in\n"
+"- fill the tower from the top with charcoal\n"
+"- ignite the lighter\n"
+"- place the pot into the flame"
+msgstr ""
+
+#: meltingpot.lua
+msgid "Menu"
+msgstr ""
+
+#: meltingpot.lua
+msgid "Melting Guide"
+msgstr ""
+
+#: meltingpot.lua
+msgid "Cross-section"
+msgstr ""
+
+#: meltingpot.lua
+msgid "Melting Pot: heat="
+msgstr ""
+
+#: meltingpot.lua
+msgid "Melting Pot"
+msgstr ""
+
+#: meltingpot.lua
+msgid "Melting"
+msgstr ""

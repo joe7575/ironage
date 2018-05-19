@@ -1,0 +1,109 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-05-19 18:09+0200\n"
+"PO-Revision-Date: 2018-05-19 18:09+0200\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.8.7.1\n"
+
+#: charcoalpile.lua
+msgid "Dirt with Ash"
+msgstr "Erde mit Asche"
+
+#: charcoalpile.lua
+msgid "Charcoal"
+msgstr "Holzkohle"
+
+#: coalburner.lua
+msgid "Ash"
+msgstr "Asche"
+
+#: init.lua
+msgid "Lighter"
+msgstr "Anzünder"
+
+#: meltingpot.lua
+msgid "Menu,Recipes,Pile,Burner"
+msgstr "Menü,Rezepte,Köhler,Brenner"
+
+#: meltingpot.lua
+msgid ""
+"Coal Pile Instructions:\n"
+"- build a 5x5 block dirt base\n"
+"- place a lighter in the centre\n"
+"- build a 3x3x3 wood cube around\n"
+"- cover all with dirt to a 5x5x5 cube\n"
+"- keep a hole to the lighter\n"
+"- ignite the lighter\n"
+"- close the pile with one wood and one dirt\n"
+"- wait until the smoke disappears\n"
+"- now you can open the pile"
+msgstr ""
+"Köhler Anleitung:\n"
+"- baue eine 5x5 Blöcke große Fläche aus Erde\n"
+"- platziere einen Anzünder in die Mitte\n"
+"- baue einen 3x3x3 großen Holzwürfel darüber\n"
+"- decke alles mit Erde ab, zu einem 5x5x5 großen Block\n"
+"- lasse ein Loch zum Anzünder\n"
+"- zünde den Anzünder an\n"
+"- schließe das Loch mit Holz und Erde\n"
+"- warte bis der Rauch verschwindet\n"
+"- nun kannst du den Köhler öffnen"
+
+#: meltingpot.lua
+msgid ""
+"Coal Burner Instructions:\n"
+"- build a cobble tower \n"
+"    (3x3 blocks base with variable height)\n"
+"- keep a hole open on one side\n"
+"- put a lighter in\n"
+"- fill the tower from the top with charcoal\n"
+"- ignite the lighter\n"
+"- place the pot into the flame"
+msgstr ""
+"Brenner Anleitung:\n"
+"- baue eine Steinturm mit einer 3x3\n"
+"    großen Grundfläche mit variabler Höhe\n"
+"- lasse an einer Seite ein Loch offen\n"
+"- lege einen Anzünder in den Turm\n"
+"- fülle den Turm von oben mit Holzkohle\n"
+"- zünde den Anzünder an\n"
+"- platziere den Schmelztiegel in die Flamme"
+
+#: meltingpot.lua
+msgid "Menu"
+msgstr "Menü"
+
+#: meltingpot.lua
+msgid "Melting Guide"
+msgstr "Schmelzanleitung"
+
+#: meltingpot.lua
+msgid "Cross-section"
+msgstr "Schnittbild"
+
+#: meltingpot.lua
+msgid "Melting Pot: heat="
+msgstr "Schmelztiegel: Hitze="
+
+#: meltingpot.lua
+msgid "Melting Pot"
+msgstr "Schmelztiegel"
+
+#: meltingpot.lua
+msgid "Melting"
+msgstr "Schmelzen"
+
+#~ msgid "Inventory"
+#~ msgstr "Inventory"

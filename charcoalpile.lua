@@ -10,6 +10,10 @@
 
 ]]--
 
+-- Load support for intllib.
+local MP = minetest.get_modpath("ironage")
+local S, NS = dofile(MP.."/intllib.lua")
+
 local PILE_BURN_TIME = 100
 
 local function num_wood(pos)
@@ -82,7 +86,7 @@ end
 local function collapse_pile(pos)
 	local pos1 = {x=pos.x-1, y=pos.y, z=pos.z-1}
 	local pos2 = {x=pos.x+1, y=pos.y+2, z=pos.z+1}
-	ironage.swap_nodes(pos1, pos2, "group:wood", "ironage:charcoalblock_burn")
+	ironage.swap_nodes(pos1, pos2, "group:wood", "ironage:charcoal_burn")
 	stop_smoke(pos)
 	make_dirt_with_ash(pos)
 end
@@ -93,9 +97,9 @@ local function convert_to_coal(pos)
 	ironage.swap_nodes(pos1, pos2, "group:wood", "air")
 	pos1 = {x=pos.x-1, y=pos.y+0, z=pos.z-1}
 	pos2 = {x=pos.x+1, y=pos.y+1, z=pos.z+1}
-	ironage.swap_nodes(pos1, pos2, "group:wood", "ironage:charcoalblock")
+	ironage.swap_nodes(pos1, pos2, "group:wood", "ironage:charcoal")
 	stop_smoke(pos)
-	ironage.swap_node(pos, "ironage:charcoalblock")
+	minetest.swap_node(pos, {name = "ironage:charcoal"})
 	make_dirt_with_ash(pos)
 	make_dirt_with_dry_grass(pos)
 end	
@@ -140,7 +144,7 @@ end
 
 
 minetest.register_node("ironage:dirt_with_ash", {
-	description = "Dirt with Ash",
+	description = S("Dirt with Ash"),
 	tiles = {"ironage_ash.png",
 		"default_dirt.png",
 		{name = "default_dirt.png^ironage_ash_side.png",
@@ -153,10 +157,10 @@ minetest.register_node("ironage:dirt_with_ash", {
 })
 
 
-minetest.register_node("ironage:charcoalblock_burn", {
+minetest.register_node("ironage:charcoal_burn", {
 	tiles = {"ironage_charcoal_burn.png"},
 	after_place_node = function(pos)
-		minetest.get_node_timer(pos):start(math.random(120, 160))
+		minetest.get_node_timer(pos):start(math.random(1200, 1600))
 	end,
 	on_timer = function(pos)
 		minetest.remove_node(pos)
@@ -170,11 +174,11 @@ minetest.register_node("ironage:charcoalblock_burn", {
 	sounds = default.node_sound_wood_defaults(),
 })
 
-minetest.register_node("ironage:charcoalblock", {
-	description = "Charcoal Block",
+minetest.register_node("ironage:charcoal", {
+	description = S("Charcoal"),
 	tiles = {"ironage_charcoal.png"},
 	on_ignite = function(pos, igniter)
-		minetest.after(2, ironage.swap_node, pos, "ironage:charcoalblock_burn")
+		minetest.after(2, minetest.swap_node, pos, {name = "ironage:charcoal_burn"})
 	end,
 	is_ground_content = false,
 	groups = {cracky = 3, falling_node = 1},  -- flammable=2, 
@@ -184,7 +188,7 @@ minetest.register_node("ironage:charcoalblock", {
 
 minetest.register_craft({
 	type = "fuel",
-	recipe = "ironage:charcoalblock",
+	recipe = "ironage:charcoal",
 	burntime = 370,
 })
 
