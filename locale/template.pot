@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-05-19 18:09+0200\n"
+"POT-Creation-Date: 2018-05-28 23:19+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -27,10 +27,6 @@ msgstr ""
 
 #: coalburner.lua
 msgid "Ash"
-msgstr ""
-
-#: init.lua
-msgid "Lighter"
 msgstr ""
 
 #: meltingpot.lua
@@ -72,15 +68,31 @@ msgid "Melting Guide"
 msgstr ""
 
 #: meltingpot.lua
+msgid "Heat"
+msgstr ""
+
+#: meltingpot.lua
+msgid "Time"
+msgstr ""
+
+#: meltingpot.lua
 msgid "Cross-section"
 msgstr ""
 
 #: meltingpot.lua
-msgid "Melting Pot: heat="
+msgid "Melting Pot active (heat="
+msgstr ""
+
+#: meltingpot.lua
+msgid "Melting Pot inactive (heat="
 msgstr ""
 
 #: meltingpot.lua
 msgid "Melting Pot"
+msgstr ""
+
+#: meltingpot.lua
+msgid "Melting Pot inactive (heat=0)"
 msgstr ""
 
 #: meltingpot.lua

@@ -96,25 +96,16 @@ local formspec1 =
 
 local function formspec2(idx)
 	local key = KeyList[idx]
-	if not key then print("idx", idx); return "" end
 	local input1 = Recipes[key].input[1] or ""
 	local input2 = Recipes[key].input[2] or ""
 	local input3 = Recipes[key].input[3] or ""
 	local input4 = Recipes[key].input[4] or ""
 	local num = Recipes[key].number
-	local output1 = Recipes[key].output
-	local output2 = ""
-	local output3 = ""
-	local output4 = ""
-	if num == 2 then
-		output2 = output1
-	elseif num == 3 then
-		output2 = output1
-		output3 = output1
-	elseif num == 4 then
-		output2 = output1
-		output3 = output1
-		output4 = output1
+	local heat = Recipes[key].heat
+	local time = Recipes[key].time
+	local output = Recipes[key].output
+	if num > 1 then
+		output = output.." "..num
 	end
 	return "size[8,8]"..
 	default.gui_bg..
@@ -130,13 +121,11 @@ local function formspec2(idx)
 	"item_image_button[1,1;1,1;"..input4..";b4;]"..
 	"item_image[2.6,0;0.8,0.8;ironage:meltingpot]"..
 	"image[2.3,0.6;1.6,1;gui_furnace_arrow_bg.png^[transformR270]"..
-	"item_image_button[4,0;1,1;"..output1..";b5;]"..
-	"item_image_button[5,0;1,1;"..output2..";b6;]"..
-	"item_image_button[4,1;1,1;"..output3..";b7;]"..
-	"item_image_button[5,1;1,1;"..output4..";b8;]"..
-	"label[2,2.5;Recipe "..idx.." of "..NumRecipes.."]"..
-	"button[2,3;1,1;priv;<<]"..
-	"button[3,3;1,1;next;>>]"..
+	"item_image_button[4,0.5;1,1;"..output..";b5;]"..
+	"label[2,2.2;"..S("Heat")..": "..heat.."  /  "..S("Time")..": "..time.." s]"..
+	"label[2,4;Recipe "..idx.." of "..NumRecipes.."]"..
+	"button[2,5.5;1,1;priv;<<]"..
+	"button[3,5.5;1,1;next;>>]"..
 	"container_end[]"
 end
 
@@ -166,7 +155,6 @@ local formspec4 =
 	"container_end[]"
 
 local function on_receive_fields(pos, formname, fields, sender)
-	--print("fields", dump(fields))
 	local meta = minetest.get_meta(pos)
 	local recipe_idx = meta:get_int("recipe_idx")
 	if recipe_idx == 0 then recipe_idx = 1 end
@@ -220,27 +208,31 @@ local function allow_metadata_inventory_take(pos, listname, index, stack, player
 	return stack:get_count()
 end
 
-local function get_output(input)
-	table.sort(input)
-	local key = table.concat(input, "-")
-	return Recipes[key]
-end
-
+-- determine recipe based on inventory items
 local function get_recipe(inv)
 	-- collect items
-	local items = {}
-	local input = {}
+	local stacks = {}
+	local names = {}
+	local numbers = {}
 	for _,stack in ipairs(inv:get_list("src")) do
 		if not stack:is_empty() then
-			table.insert(input, stack:get_name())
-			table.insert(items, ItemStack(stack:get_name()))
+			table.insert(names, stack:get_name())
+			table.insert(numbers, 1)
+			table.insert(stacks, stack)
+		else
+			table.insert(numbers, 0)
+			table.insert(stacks, ItemStack(""))
 		end
 	end
 	-- determine output
-	local output = get_output(input)
+	table.sort(names)
+	local key = table.concat(names, "-")
+	local output = Recipes[key]
+	
 	if output then
 		return {
-			items = items,
+			numbers = numbers,
+			stacks = stacks,
 			output = ItemStack(output.output.." "..output.number),
 			heat = output.heat,
 			time = output.time,
@@ -249,19 +241,16 @@ local function get_recipe(inv)
 	return nil
 end
 
--- prepare recipe and store in table for faster access
+-- prepare recipe and store in cache table for faster access
 local function store_recipe_in_cache(pos)
 	local hash = minetest.hash_node_position(pos)
 	local meta = minetest.get_meta(pos)
 	local inv = meta:get_inventory()
 	local recipe = get_recipe(inv)
-	if recipe then
-		Cache[hash] = recipe
-		return recipe
-	end
-	return false
+	Cache[hash] = recipe
+	return recipe
 end
-	
+
 -- read value from the node below
 local function get_heat(pos)
 	local heat = 0
@@ -275,61 +264,67 @@ local function get_heat(pos)
 	return heat
 end
 	
--- Start melting if heat>0 AND source items available
+-- Start melting if heat is ok AND source items available
 function ironage.switch_to_active(pos)
 	local meta = minetest.get_meta(pos)
 	local heat = get_heat(pos)
-	local inv = meta:get_inventory()
+	local recipe = store_recipe_in_cache(pos)
 	
-	if heat > 0 and not inv:is_empty("src") then
-		if store_recipe_in_cache(pos) then
-			minetest.swap_node(pos, {name = "ironage:meltingpot_active"})
-			minetest.registered_nodes["ironage:meltingpot_active"].on_construct(pos)
-			meta:set_string("infotext", S("Melting Pot active (heat=")..heat..")")
-			minetest.get_node_timer(pos):start(2)
-			return true
-		end
+	if recipe and heat >= recipe.heat then
+		minetest.swap_node(pos, {name = "ironage:meltingpot_active"})
+		minetest.registered_nodes["ironage:meltingpot_active"].on_construct(pos)
+		meta:set_string("infotext", S("Melting Pot active (heat=")..heat..")")
+		minetest.get_node_timer(pos):start(2)
+		return true
 	end
+	meta:set_string("infotext", S("Melting Pot inactive (heat=")..heat..")")
 	return false
 end	
 
--- Stop melting if heat==0 OR no source items available
+local function set_inactive(meta, pos, heat)
+	minetest.get_node_timer(pos):stop()
+	minetest.swap_node(pos, {name = "ironage:meltingpot"})
+	minetest.registered_nodes["ironage:meltingpot"].on_construct(pos)
+	meta:set_string("infotext", S("Melting Pot inactive (heat=")..heat..")")
+end
+
+-- Stop melting if heat to low OR no source items available
 local function switch_to_inactive(pos)
 	local meta = minetest.get_meta(pos)
 	local heat = get_heat(pos)
-	local inv = meta:get_inventory()
+	local hash = minetest.hash_node_position(pos)
+	local recipe = Cache[hash] or store_recipe_in_cache(pos)
 	
-	if heat == 0 or inv:is_empty("src") then
-		minetest.get_node_timer(pos):stop()
-		minetest.swap_node(pos, {name = "ironage:meltingpot"})
-		minetest.registered_nodes["ironage:meltingpot"].on_construct(pos)
-		meta:set_string("infotext", S("Melting Pot inactive"))
+	if not recipe or heat < recipe.heat then
+		set_inactive(meta, pos, heat)
 		return true
 	end
+	meta:set_string("infotext", S("Melting Pot active (heat=")..heat..")")
 	return false
 end	
 
-
--- check if inventory has all needed items
-local function contains_items(inv, listname, items)
-	for _,item in ipairs(items) do
-		if not inv:contains_item(listname, item) then
-			return false
-		end
-	end
-	return true
-end
-
 -- move recipe src items to dst output
-local function process(inv, recipe)
-	if contains_items(inv, "src", recipe.items) then
-		if inv:room_for_item("dst", recipe.output) then
-			for _,item in ipairs(recipe.items) do
-				inv:remove_item("src", item)
+local function process(inv, recipe, heat)
+	if heat < recipe.heat then
+		return false
+	end
+	for idx,num in ipairs(recipe.numbers) do
+		local stack = recipe.stacks[idx]
+	end
+	if inv:room_for_item("dst", recipe.output) then
+		for idx,num in ipairs(recipe.numbers) do
+			local stack = recipe.stacks[idx]
+			if num == 1 then
+				if stack and stack:get_count() > 0 then
+					stack:take_item(1)
+				else
+					return false
+				end
 			end
-			inv:add_item("dst", recipe.output)
-			return true
-		end	
+		end
+		inv:add_item("dst", recipe.output)
+		inv:set_list("src", recipe.stacks)
+		return true
 	end
 	return false
 end		
@@ -339,11 +334,11 @@ local function smelting(pos, recipe, heat, elapsed)
 	local inv = meta:get_inventory()
 	elapsed = elapsed + meta:get_int("leftover")
 	
-	while heat >= recipe.heat and elapsed >= recipe.time do
-		print("process", elapsed)
-		if process(inv, recipe) == false then 
+	while elapsed >= recipe.time do
+		if process(inv, recipe, heat) == false then 
 			meta:set_int("leftover", 0)
-			return 
+			set_inactive(meta, pos, heat)
+			return false
 		end
 		elapsed = elapsed - recipe.time
 	end
@@ -352,7 +347,6 @@ local function smelting(pos, recipe, heat, elapsed)
 end
 
 local function pot_node_timer(pos, elapsed)
-	print("pot_node_timer", elapsed)
 	if switch_to_inactive(pos) == false then
 		local hash = minetest.hash_node_position(pos)
 		local heat = get_heat(pos)
@@ -411,6 +405,21 @@ minetest.register_node("ironage:meltingpot_active", {
 		on_receive_fields(pos, formname, fields, sender)
 	end,
 	
+	on_metadata_inventory_move = function(pos)
+		store_recipe_in_cache(pos)
+		switch_to_inactive(pos)
+	end,
+	
+	on_metadata_inventory_put = function(pos)
+		store_recipe_in_cache(pos)
+		switch_to_inactive(pos)
+	end,
+	
+	on_metadata_inventory_take = function(pos)
+		store_recipe_in_cache(pos)
+		switch_to_inactive(pos)
+	end,
+	
 	can_dig = can_dig,
 	
 	drop = "ironage:meltingpot",
@@ -448,22 +457,25 @@ minetest.register_node("ironage:meltingpot", {
 	on_construct = function(pos)
 		local meta = minetest.get_meta(pos)
 		meta:set_string("formspec", formspec1)
-		meta:set_string("infotext", S("Melting Pot inactive"))
+		meta:set_string("infotext", S("Melting Pot inactive (heat=0)"))
 		local inv = meta:get_inventory()
 		inv:set_size('src', 4)
 		inv:set_size('dst', 4)
 	end,
 	
 	on_metadata_inventory_move = function(pos)
-		if store_recipe_in_cache(pos) then
-			ironage.switch_to_active(pos)
-		end
+		store_recipe_in_cache(pos)
+		ironage.switch_to_active(pos)
 	end,
 	
 	on_metadata_inventory_put = function(pos)
-		if store_recipe_in_cache(pos) then
-			ironage.switch_to_active(pos)
-		end
+		store_recipe_in_cache(pos)
+		ironage.switch_to_active(pos)
+	end,
+	
+	on_metadata_inventory_take = function(pos)
+		store_recipe_in_cache(pos)
+		ironage.switch_to_active(pos)
 	end,
 	
 	on_receive_fields = function(pos, formname, fields, sender)
@@ -498,21 +510,26 @@ unified_inventory.register_craft_type("melting", {
 })
 
 function ironage.register_recipe(recipe)
-	table.sort(recipe.recipe)
-	local key = table.concat(recipe.recipe, "-")
+	--table.sort(recipe.recipe)
+	local names = table.copy(recipe.recipe)
+	table.sort(names)
+	local key = table.concat(names, "-")
 	local output = string.split(recipe.output, " ")
+	local number = tonumber(output[2] or 1)
 	table.insert(KeyList, key)
 	Recipes[key] = {
 		input = recipe.recipe,
 		output = output[1],
-		number = tonumber(output[2] or 1),
-		heat = recipe.heat or 3,
-		time = recipe.time or 2,
+		number = number,
+		heat = math.max(recipe.heat or 3, 2),
+		time = math.max(recipe.time or 2, 2*number),
 	}
 	NumRecipes = NumRecipes + 1
 
-	recipe.items = recipe.recipe
-	recipe.type = "melting"
-	unified_inventory.register_craft(recipe)
+	if minetest.global_exists("unified_inventory") then
+		recipe.items = recipe.recipe
+		recipe.type = "melting"
+		unified_inventory.register_craft(recipe)
+	end
 end
 

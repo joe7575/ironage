@@ -31,14 +31,6 @@ local function num_dirt(pos)
 	return #nodes
 end
 
-local function make_dirt_with_ash(pos)
-	pos.y = pos.y - 1
-	if string.find(minetest.get_node(pos).name, "default:dirt") then
-		minetest.swap_node(pos, {name = "ironage:dirt_with_ash"})
-	end
-	pos.y = pos.y + 1
-end
-
 local function make_dirt_with_dry_grass(pos)
 	local pos1 = {x=pos.x-2, y=pos.y+3, z=pos.z-2}
 	local pos2 = {x=pos.x+2, y=pos.y+3, z=pos.z+2}
@@ -47,6 +39,13 @@ local function make_dirt_with_dry_grass(pos)
 	end
 end
 
+local function make_dirt_with_ash(pos)
+	local pos1 = {x=pos.x-1, y=pos.y-1, z=pos.z-1}
+	local pos2 = {x=pos.x+1, y=pos.y-1, z=pos.z+1}
+	for _,p in ipairs(minetest.find_nodes_in_area(pos1, pos2, "default:dirt")) do
+		minetest.swap_node(p, {name = "ironage:dirt_with_ash"})
+	end
+end
 local function start_smoke(pos)
 	local meta = minetest.get_meta(pos)
 	pos = {x=pos.x, y=pos.y+3.6, z=pos.z}
@@ -107,17 +106,14 @@ end
 function ironage.start_pile(pos)
 	local meta = minetest.get_meta(pos)
 	meta:set_int("ignite", minetest.get_gametime())
-	minetest.get_node_timer(pos):start(5)
+	minetest.get_node_timer(pos):start(20)
 end
 
 
 function ironage.keep_running_pile(pos)
 	local meta = minetest.get_meta(pos)
-	--print("running", meta:get_int("running"), "ignite", meta:get_int("ignite"), "gametime", minetest.get_gametime())
 	if meta:get_int("running") == 0 then
 		if num_wood(pos) == 26 and num_dirt(pos) == 98 then
-			minetest.get_node_timer(pos):stop()
-			minetest.get_node_timer(pos):start(22)
 			meta:set_int("running", 1)
 			start_smoke(pos)
 		elseif minetest.get_gametime() > (meta:get_int("ignite") + 10) then
@@ -164,7 +160,6 @@ minetest.register_node("ironage:charcoal_burn", {
 	end,
 	on_timer = function(pos)
 		minetest.remove_node(pos)
-		make_dirt_with_ash(pos)
 		return false
 	end,
 	drop = "",

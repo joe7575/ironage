@@ -4,8 +4,8 @@ Fantasy Charcoal Pile and Coal Burner for melting ore lumps to ingots (furnace r
 
 
 ## Dependencies
-default  
-fire
+default, fire, farming
+Optional: intllib, wielded_light, unified_inventory
 
 # License
 Copyright (C) 2018 Joachim Stolberg  

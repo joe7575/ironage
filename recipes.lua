@@ -17,25 +17,24 @@ local S, NS = dofile(MP.."/intllib.lua")
 ironage.register_recipe({
 	output = "default:obsidian", 
 	recipe = {"default:cobble"}, 
-	heat = 4,
+	heat = 5,
+	time = 4,
 })
 
 ironage.register_recipe({
-	output = "default:gold_ingot", 
-	recipe = {"default:copper_lump", "default:mese_crystal_fragment"}, 
-	heat = 4
-})
-
-ironage.register_recipe({
-	output = "default:gold_ingot", 
-	recipe = {"default:gold_lump"}, 
-	heat = 4
+	output = "default:bronze_ingot 4", 
+	recipe = {"default:tin_ingot", "default:copper_ingot", "default:copper_ingot", "default:copper_ingot"}, 
+	heat = 2,
+	time = 8,
 })
 
 ironage.register_recipe({
 	output = "default:steel_ingot", 
-	recipe = {"default:iron_lump"}, 
-	heat = 4
+	recipe = {"default:coal_lump", "default:iron_lump", "default:iron_lump", "default:iron_lump"}, 
+	heat = 4,
+	time = 8,
 })
+
 minetest.clear_craft({output = "default:steel_ingot"})
+minetest.clear_craft({output = "default:bronze_ingot"})
 

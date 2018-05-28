@@ -122,8 +122,13 @@ minetest.register_node("ironage:ash", {
 	sounds = default.node_sound_defaults(),
 })
 
-function ironage.start_burner(pos)
+function ironage.start_burner(pos, playername)
 	local height = num_coal(pos)
+	if minetest.is_protected(
+			{x=pos.x, y=pos.y+height, z=pos.z}, 
+			playername) then
+		return
+	end
 	if num_cobble(pos, height) == height * 8 then
 		local meta = minetest.get_meta(pos)
 		meta:set_int("ignite", minetest.get_gametime())
@@ -149,18 +154,21 @@ function ironage.keep_running_burner(pos)
 		minetest.sound_stop(handle)
 		meta:set_int("handle", nil)
 	end
-	local new_height = num_coal(pos)
-	if new_height > 0 then
-		flame(pos, height, new_height)
-		handle = minetest.sound_play("ironage", {
-				pos = {x=pos.x, y=pos.y+height, z=pos.z}, 
-				max_hear_distance = 32, 
-				gain = new_height/32.0, 
-				loop = true})
-		meta:set_int("handle", handle)
-	else
-		minetest.swap_node(pos, {name="ironage:ash"})
-		return false
+	if num_cobble(pos, height) == height * 8 then
+		local new_height = num_coal(pos)
+		if new_height > 0 then
+			flame(pos, height, new_height)
+			handle = minetest.sound_play("ironage", {
+					pos = {x=pos.x, y=pos.y+height, z=pos.z}, 
+					max_hear_distance = 32, 
+					gain = new_height/32.0, 
+					loop = true})
+			meta:set_int("handle", handle)
+		else
+			minetest.swap_node(pos, {name="ironage:ash"})
+			return false
+		end
+		return true
 	end
 	return true
 end
