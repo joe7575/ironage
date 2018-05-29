@@ -29,20 +29,20 @@ ironage.register_recipe({
 })
 ```
 
-'output' and 'recipe' is similar to the standard crafting recipes. All ironage recipes are 'shapeless'.  
+'output' and 'recipe' are similar to the standard crafting recipes. All ironage recipes are 'shapeless'.  
 'recipe' is a list with up to four items.  
-'heat' is the needed burner heat (corresponds to the burner height/number of charcoal nodes) (2..32)  
+'heat' is the needed burner heat, which corresponds to the burner height/number of charcoal nodes (2..32)  
 'time' is the smelting time in seconds (2..n)  
 
 
-If the mod wielded_light is installed, recipes for Meridium and Meridium tools are added.
+If the mod 'wielded_light' is installed, recipes for Meridium and Meridium tools are added.
 Meridium is a glowing metal alloy to produce glowing tools.
 
-If the mod unified_inventory is installed, the recipes are also available via the unified_inventory crafting guide.
+If the mod 'unified_inventory' is installed, the recipes are also available via the unified_inventory crafting guide.
 
 
 ## Dependencies
-default, fire, farming
+default, fire, farming  
 Optional: intllib, wielded_light, unified_inventory
 
 # License
