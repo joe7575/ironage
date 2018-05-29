@@ -32,7 +32,7 @@ minetest.register_node("ironage:lighter_burn", {
 	drop = "",
 	light_source = 10,
 	is_ground_content = false,
-	groups = {cracky = 3},
+	groups = {cracky = 3, not_in_creative_inventory=1},
 	sounds = default.node_sound_stone_defaults(),
 })
 
@@ -56,7 +56,7 @@ minetest.register_node("ironage:coal_lighter_burn", {
 	drop = "",
 	light_source = 10,
 	is_ground_content = false,
-	groups = {cracky = 3},
+	groups = {cracky = 3, not_in_creative_inventory=1},
 	sounds = default.node_sound_stone_defaults(),
 })
 

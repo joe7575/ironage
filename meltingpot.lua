@@ -18,25 +18,24 @@ local SMELTING_TIME = 2
 
 local Tabs = S("Menu,Recipes,Pile,Burner")
 
-local PileHelp = S([[Coal Pile Instructions:
+local PileHelp = S([[Coal Pile to produce charcoal:
 - build a 5x5 block dirt base
 - place a lighter in the centre
 - build a 3x3x3 wood cube around
 - cover all with dirt to a 5x5x5 cube
 - keep a hole to the lighter
-- ignite the lighter
+- ignite the lighter and immediately
 - close the pile with one wood and one dirt
-- wait until the smoke disappears
-- now you can open the pile]])
+- open the pile after the smoke disappeared]])
 
-local BurnerHelp = S([[Coal Burner Instructions:
-- build a cobble tower 
-    (3x3 blocks base with variable height)
+local BurnerHelp = S([[Coal Burner to heat the melting pot:
+- build a 3x3xN cobble tower
+- more height means more flame heat   
 - keep a hole open on one side
 - put a lighter in
 - fill the tower from the top with charcoal
 - ignite the lighter
-- place the pot into the flame]])
+- place the pot in the flame]])
 
 local PileImages = {
 	"default_dirt", "default_dirt", "default_dirt",    "default_dirt", "default_dirt",
@@ -54,11 +53,12 @@ local BurnerImages = {
 	false, false, "default_cobble", "default_cobble",   "default_cobble",
 }
 
-local Recipes = {}
-local KeyList = {}
+local Recipes = {}     -- registered recipes
+local KeyList = {}     -- index to Recipes key translation
 local NumRecipes = 0
-local Cache = {}
+local Cache = {}       -- store melting pot inventory data
 
+-- formspec images
 local function draw(images)
 	local tbl = {}
 	for y=0,4 do
@@ -303,7 +303,7 @@ local function switch_to_inactive(pos)
 	return false
 end	
 
--- move recipe src items to dst output
+-- move recipe src items to output inventory
 local function process(inv, recipe, heat)
 	if heat < recipe.heat then
 		return false
@@ -424,7 +424,7 @@ minetest.register_node("ironage:meltingpot_active", {
 	
 	drop = "ironage:meltingpot",
 	is_ground_content = false,
-	groups = {cracky = 3},
+	groups = {cracky = 3, not_in_creative_inventory=1},
 	sounds = default.node_sound_metal_defaults(),
 
 	allow_metadata_inventory_put = allow_metadata_inventory_put,
@@ -502,12 +502,25 @@ minetest.register_craft({
 	},
 })
 
-unified_inventory.register_craft_type("melting", {
-	description = S("Melting"),
-	icon = "default_cobble.png^ironage_meltingpot.png",
-	width = 2,
-	height = 2,
-})
+if minetest.global_exists("unified_inventory") then
+	unified_inventory.register_craft_type("melting", {
+		description = S("Melting"),
+		icon = "default_cobble.png^ironage_meltingpot.png",
+		width = 2,
+		height = 2,
+	})
+	unified_inventory.register_craft_type("burning", {
+		description = S("Burning"),
+		icon = "ironage_smoke.png",
+		width = 1,
+		height = 1,
+	})
+	unified_inventory.register_craft({
+		output = "ironage:charcoal",
+		items = {"group:wood"},
+		type = "burning",
+	})
+end
 
 function ironage.register_recipe(recipe)
 	--table.sort(recipe.recipe)

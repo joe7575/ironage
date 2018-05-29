@@ -14,8 +14,10 @@
 local MP = minetest.get_modpath("ironage")
 local S, NS = dofile(MP.."/intllib.lua")
 
-local PILE_BURN_TIME = 100
+local PILE_BURN_TIME = 1200
+local COAL_BURN_TIME = 700
 
+-- determine the number of wood nodes
 local function num_wood(pos)
 	local pos1 = {x=pos.x-1, y=pos.y, z=pos.z-1}
 	local pos2 = {x=pos.x+1, y=pos.y+2, z=pos.z+1}
@@ -23,6 +25,7 @@ local function num_wood(pos)
 	return #nodes
 end
 
+-- determine the number of nodes nodes (around wood)
 local function num_dirt(pos)
 	local pos1 = {x=pos.x-2, y=pos.y-1, z=pos.z-2}
 	local pos2 = {x=pos.x+2, y=pos.y+3, z=pos.z+2}
@@ -31,6 +34,7 @@ local function num_dirt(pos)
 	return #nodes
 end
 
+-- replace pile top nodes
 local function make_dirt_with_dry_grass(pos)
 	local pos1 = {x=pos.x-2, y=pos.y+3, z=pos.z-2}
 	local pos2 = {x=pos.x+2, y=pos.y+3, z=pos.z+2}
@@ -39,6 +43,7 @@ local function make_dirt_with_dry_grass(pos)
 	end
 end
 
+-- replace pile bottom nodes
 local function make_dirt_with_ash(pos)
 	local pos1 = {x=pos.x-1, y=pos.y-1, z=pos.z-1}
 	local pos2 = {x=pos.x+1, y=pos.y-1, z=pos.z+1}
@@ -46,6 +51,7 @@ local function make_dirt_with_ash(pos)
 		minetest.swap_node(p, {name = "ironage:dirt_with_ash"})
 	end
 end
+
 local function start_smoke(pos)
 	local meta = minetest.get_meta(pos)
 	pos = {x=pos.x, y=pos.y+3.6, z=pos.z}
@@ -81,7 +87,7 @@ local function stop_smoke(pos)
 	meta:set_int("smoke", nil)
 end
 
-
+-- replace wood by burning coal
 local function collapse_pile(pos)
 	local pos1 = {x=pos.x-1, y=pos.y, z=pos.z-1}
 	local pos2 = {x=pos.x+1, y=pos.y+2, z=pos.z+1}
@@ -90,6 +96,7 @@ local function collapse_pile(pos)
 	make_dirt_with_ash(pos)
 end
 
+-- replace wood by coal
 local function convert_to_coal(pos)
 	local pos1 = {x=pos.x-1, y=pos.y+1, z=pos.z-1}
 	local pos2 = {x=pos.x+1, y=pos.y+2, z=pos.z+1}
@@ -109,7 +116,7 @@ function ironage.start_pile(pos)
 	minetest.get_node_timer(pos):start(20)
 end
 
-
+-- node timer function
 function ironage.keep_running_pile(pos)
 	local meta = minetest.get_meta(pos)
 	if meta:get_int("running") == 0 then
@@ -141,11 +148,12 @@ end
 
 minetest.register_node("ironage:dirt_with_ash", {
 	description = S("Dirt with Ash"),
-	tiles = {"ironage_ash.png",
+	tiles = {
+		"ironage_ash.png",
 		"default_dirt.png",
 		{name = "default_dirt.png^ironage_ash_side.png",
 			tileable_vertical = false}},
-	groups = {crumbly = 3, soil = 1, spreading_dirt_type = 1},
+	groups = {crumbly = 3, soil = 1, spreading_dirt_type = 1, not_in_creative_inventory=1},
 	drop = 'default:dirt',
 	sounds = default.node_sound_dirt_defaults({
 		footstep = {name = "default_grass_footstep", gain = 0.4},
@@ -156,7 +164,7 @@ minetest.register_node("ironage:dirt_with_ash", {
 minetest.register_node("ironage:charcoal_burn", {
 	tiles = {"ironage_charcoal_burn.png"},
 	after_place_node = function(pos)
-		minetest.get_node_timer(pos):start(math.random(1200, 1600))
+		minetest.get_node_timer(pos):start(math.random(COAL_BURN_TIME, COAL_BURN_TIME*1.2))
 	end,
 	on_timer = function(pos)
 		minetest.remove_node(pos)
@@ -165,7 +173,7 @@ minetest.register_node("ironage:charcoal_burn", {
 	drop = "",
 	light_source = 10,
 	is_ground_content = false,
-	groups = {cracky = 3, falling_node = 1},
+	groups = {cracky = 3, falling_node = 1, not_in_creative_inventory=1},
 	sounds = default.node_sound_wood_defaults(),
 })
 

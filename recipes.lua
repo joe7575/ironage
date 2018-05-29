@@ -10,22 +10,11 @@
 
 ]]--
 
--- Load support for intllib.
-local MP = minetest.get_modpath("ironage")
-local S, NS = dofile(MP.."/intllib.lua")
-
 ironage.register_recipe({
 	output = "default:obsidian", 
 	recipe = {"default:cobble"}, 
 	heat = 5,
 	time = 4,
-})
-
-ironage.register_recipe({
-	output = "default:bronze_ingot 4", 
-	recipe = {"default:tin_ingot", "default:copper_ingot", "default:copper_ingot", "default:copper_ingot"}, 
-	heat = 2,
-	time = 8,
 })
 
 ironage.register_recipe({
@@ -36,5 +25,4 @@ ironage.register_recipe({
 })
 
 minetest.clear_craft({output = "default:steel_ingot"})
-minetest.clear_craft({output = "default:bronze_ingot"})
 

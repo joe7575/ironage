@@ -101,7 +101,7 @@ for idx,ratio in ipairs(lRatio) do
 		floodable = true,
 		sunlight_propagates = true,
 		damage_per_second = 4 + idx,
-		groups = {igniter = 2, dig_immediate = 3, ironage_flame=1},
+		groups = {igniter = 2, dig_immediate = 3, ironage_flame=1, not_in_creative_inventory=1},
 		drop = "",
 	})
 end
@@ -117,7 +117,7 @@ minetest.register_node("ironage:ash", {
 		},
 	},
 	is_ground_content = false,
-	groups = {cracky = 3},
+	groups = {cracky = 3, not_in_creative_inventory=1},
 	drop = "",
 	sounds = default.node_sound_defaults(),
 })

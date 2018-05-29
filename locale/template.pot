@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-05-28 23:19+0200\n"
+"POT-Creation-Date: 2018-05-29 23:31+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -35,28 +35,27 @@ msgstr ""
 
 #: meltingpot.lua
 msgid ""
-"Coal Pile Instructions:\n"
+"Coal Pile to produce charcoal:\n"
 "- build a 5x5 block dirt base\n"
 "- place a lighter in the centre\n"
 "- build a 3x3x3 wood cube around\n"
 "- cover all with dirt to a 5x5x5 cube\n"
 "- keep a hole to the lighter\n"
-"- ignite the lighter\n"
+"- ignite the lighter and immediately\n"
 "- close the pile with one wood and one dirt\n"
-"- wait until the smoke disappears\n"
-"- now you can open the pile"
+"- open the pile after the smoke disappeared"
 msgstr ""
 
 #: meltingpot.lua
 msgid ""
-"Coal Burner Instructions:\n"
-"- build a cobble tower \n"
-"    (3x3 blocks base with variable height)\n"
+"Coal Burner to heat the melting pot:\n"
+"- build a 3x3xN cobble tower\n"
+"- more height means more flame heat   \n"
 "- keep a hole open on one side\n"
 "- put a lighter in\n"
 "- fill the tower from the top with charcoal\n"
 "- ignite the lighter\n"
-"- place the pot into the flame"
+"- place the pot in the flame"
 msgstr ""
 
 #: meltingpot.lua
@@ -97,4 +96,8 @@ msgstr ""
 
 #: meltingpot.lua
 msgid "Melting"
+msgstr ""
+
+#: meltingpot.lua
+msgid "Burning"
 msgstr ""
