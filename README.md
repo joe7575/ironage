@@ -6,7 +6,7 @@ Browse on: ![GitHub](https://github.com/joe7575/ironage)
 
 Download: ![GitHub](https://github.com/joe7575/ironage/archive/master.zip)
 
-With this mod new blocks and alloys can be made.  
+With this mod new blocks, ingots and alloys can be made.  
 The mod includes a Melting Pot (to complement the furnace). The pot must be heated with a coal burner.  
 The charcoal must first be produced with the help of a charcoal burner (charcoal pile).  
 
