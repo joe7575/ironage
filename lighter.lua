@@ -32,8 +32,8 @@ minetest.register_node("ironage:lighter_burn", {
 	drop = "",
 	light_source = 10,
 	is_ground_content = false,
-	groups = {cracky = 3, not_in_creative_inventory=1},
-	sounds = default.node_sound_stone_defaults(),
+	groups = {crumbly = 2, not_in_creative_inventory=1},
+	sounds = default.node_sound_dirt_defaults(),
 })
 
 minetest.register_node("ironage:coal_lighter_burn", {
@@ -56,8 +56,8 @@ minetest.register_node("ironage:coal_lighter_burn", {
 	drop = "",
 	light_source = 10,
 	is_ground_content = false,
-	groups = {cracky = 3, not_in_creative_inventory=1},
-	sounds = default.node_sound_stone_defaults(),
+	groups = {crumbly = 2, not_in_creative_inventory=1},
+	sounds = default.node_sound_dirt_defaults(),
 })
 
 minetest.register_node("ironage:lighter", {
@@ -75,8 +75,8 @@ minetest.register_node("ironage:lighter", {
 		meta:set_string("playername", placer:get_player_name())
 	end,
 	is_ground_content = false,
-	groups = {cracky = 3,flammable=2}, 
-	sounds = default.node_sound_leaves_defaults(),
+	groups = {crumbly = 2, flammable = 2}, 
+	sounds = default.node_sound_dirt_defaults(),
 })
 
 minetest.register_craft({

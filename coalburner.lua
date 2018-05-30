@@ -117,7 +117,7 @@ minetest.register_node("ironage:ash", {
 		},
 	},
 	is_ground_content = false,
-	groups = {cracky = 3, not_in_creative_inventory=1},
+	groups = {crumbly = 3, not_in_creative_inventory=1},
 	drop = "",
 	sounds = default.node_sound_defaults(),
 })

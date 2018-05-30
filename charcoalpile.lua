@@ -173,8 +173,8 @@ minetest.register_node("ironage:charcoal_burn", {
 	drop = "",
 	light_source = 10,
 	is_ground_content = false,
-	groups = {cracky = 3, falling_node = 1, not_in_creative_inventory=1},
-	sounds = default.node_sound_wood_defaults(),
+	groups = {crumbly = 2, falling_node = 1, not_in_creative_inventory=1},
+	sounds = default.node_sound_dirt_defaults(),
 })
 
 minetest.register_node("ironage:charcoal", {
@@ -184,8 +184,8 @@ minetest.register_node("ironage:charcoal", {
 		minetest.after(2, minetest.swap_node, pos, {name = "ironage:charcoal_burn"})
 	end,
 	is_ground_content = false,
-	groups = {cracky = 3, falling_node = 1},  -- flammable=2, 
-	sounds = default.node_sound_wood_defaults(),
+	groups = {crumbly = 2, falling_node = 1}, 
+	sounds = default.node_sound_dirt_defaults(),
 })
 
 
