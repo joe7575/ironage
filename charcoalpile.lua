@@ -182,6 +182,7 @@ minetest.register_node("ironage:charcoal", {
 	tiles = {"ironage_charcoal.png"},
 	on_ignite = function(pos, igniter)
 		minetest.after(2, minetest.swap_node, pos, {name = "ironage:charcoal_burn"})
+		minetest.after(COAL_BURN_TIME/2, minetest.remove_node, pos)
 	end,
 	is_ground_content = false,
 	groups = {crumbly = 2, falling_node = 1}, 

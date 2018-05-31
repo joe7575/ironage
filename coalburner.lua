@@ -42,11 +42,13 @@ local function remove_flame(pos, height)
 		local node = minetest.get_node(pos)
 		if string.find(node.name, "ironage:flame") then
 			minetest.remove_node(pos)
+		elseif node.name == "ironage:meltingpot" then
+			ironage.update_heat(pos)
 		end
 	end
 end
 
-local function flame(pos, height, heat)
+local function flame(pos, height, heat, first_time)
 	local idx
 	pos = {x=pos.x, y=pos.y+height, z=pos.z}
 	for idx=heat,1,-1 do
@@ -57,7 +59,11 @@ local function flame(pos, height, heat)
 			return
 		end
 		if node.name == "ironage:meltingpot" then
-			ironage.switch_to_active(pos)
+			if first_time then
+				ironage.switch_to_active(pos)
+			else
+				ironage.update_heat(pos)
+			end
 			return
 		end
 		minetest.add_node(pos, {name = "ironage:flame"..idx})
@@ -134,7 +140,7 @@ function ironage.start_burner(pos, playername)
 		meta:set_int("ignite", minetest.get_gametime())
 		meta:set_int("height", height)
 		start_burner(pos, height)
-		flame(pos, height, height)
+		flame(pos, height, height, true)
 		local handle = minetest.sound_play("ironage", {
 				pos = {x=pos.x, y=pos.y+height, z=pos.z}, 
 				max_hear_distance = 20, 
@@ -157,7 +163,7 @@ function ironage.keep_running_burner(pos)
 	if num_cobble(pos, height) == height * 8 then
 		local new_height = num_coal(pos)
 		if new_height > 0 then
-			flame(pos, height, new_height)
+			flame(pos, height, new_height, false)
 			handle = minetest.sound_play("ironage", {
 					pos = {x=pos.x, y=pos.y+height, z=pos.z}, 
 					max_hear_distance = 32, 

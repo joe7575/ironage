@@ -18,7 +18,7 @@ ironage.register_recipe({
 })
 
 ironage.register_recipe({
-	output = "default:steel_ingot", 
+	output = "default:steel_ingot 4", 
 	recipe = {"default:coal_lump", "default:iron_lump", "default:iron_lump", "default:iron_lump"}, 
 	heat = 4,
 	time = 8,

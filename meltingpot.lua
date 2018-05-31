@@ -208,34 +208,46 @@ local function allow_metadata_inventory_take(pos, listname, index, stack, player
 	return stack:get_count()
 end
 
+-- generate an unique key based on the unsorted and
+-- variable number of inventory items
+local function recipe_key(items)
+	tbl = {}
+	-- remove items which exist more than once
+	for _,item in ipairs(items) do
+		tbl[item] = true
+	end
+	local names = {}
+	for key,_ in pairs(tbl) do
+		names[#names + 1] = key
+	end
+	-- bring in a sorted order
+	table.sort(names)
+	return table.concat(names, "-")
+end
+
 -- determine recipe based on inventory items
 local function get_recipe(inv)
 	-- collect items
 	local stacks = {}
 	local names = {}
-	local numbers = {}
 	for _,stack in ipairs(inv:get_list("src")) do
 		if not stack:is_empty() then
 			table.insert(names, stack:get_name())
-			table.insert(numbers, 1)
 			table.insert(stacks, stack)
 		else
-			table.insert(numbers, 0)
 			table.insert(stacks, ItemStack(""))
 		end
 	end
-	-- determine output
-	table.sort(names)
-	local key = table.concat(names, "-")
-	local output = Recipes[key]
+	local key = recipe_key(names)
+	local recipe = Recipes[key]
 	
-	if output then
+	if recipe then
 		return {
-			numbers = numbers,
+			input = recipe.input,
 			stacks = stacks,
-			output = ItemStack(output.output.." "..output.number),
-			heat = output.heat,
-			time = output.time,
+			output = ItemStack(recipe.output.." "..recipe.number),
+			heat = recipe.heat,
+			time = recipe.time,
 		}
 	end
 	return nil
@@ -281,6 +293,12 @@ function ironage.switch_to_active(pos)
 	return false
 end	
 
+function ironage.update_heat(pos)
+	local meta = minetest.get_meta(pos)
+	local heat = get_heat(pos)
+	meta:set_string("infotext", S("Melting Pot inactive (heat=")..heat..")")
+end	
+
 local function set_inactive(meta, pos, heat)
 	minetest.get_node_timer(pos):stop()
 	minetest.swap_node(pos, {name = "ironage:meltingpot"})
@@ -303,23 +321,32 @@ local function switch_to_inactive(pos)
 	return false
 end	
 
+
+local function index(list, x)
+	for idx, v in pairs(list) do
+		if v == x then return idx end
+	end
+	return nil
+end
+
 -- move recipe src items to output inventory
 local function process(inv, recipe, heat)
 	if heat < recipe.heat then
 		return false
 	end
-	for idx,num in ipairs(recipe.numbers) do
-		local stack = recipe.stacks[idx]
-	end
+	local res = false
 	if inv:room_for_item("dst", recipe.output) then
-		for idx,num in ipairs(recipe.numbers) do
-			local stack = recipe.stacks[idx]
-			if num == 1 then
-				if stack and stack:get_count() > 0 then
+		for _,item in ipairs(recipe.input) do
+			res = false
+			for _, stack in ipairs(recipe.stacks) do
+				if stack:get_count() > 0 and stack:get_name() == item then
 					stack:take_item(1)
-				else
-					return false
+					res = true
+					break
 				end
+			end
+			if res == false then
+				return false
 			end
 		end
 		inv:add_item("dst", recipe.output)
@@ -523,10 +550,7 @@ if minetest.global_exists("unified_inventory") then
 end
 
 function ironage.register_recipe(recipe)
-	--table.sort(recipe.recipe)
-	local names = table.copy(recipe.recipe)
-	table.sort(names)
-	local key = table.concat(names, "-")
+	local key = recipe_key(recipe.recipe)
 	local output = string.split(recipe.output, " ")
 	local number = tonumber(output[2] or 1)
 	table.insert(KeyList, key)
