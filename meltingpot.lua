@@ -95,7 +95,8 @@ local formspec1 =
 	"listring[current_player;main]"
 
 local function formspec2(idx)
-	local key = KeyList[idx]
+	idx = math.min(idx, #KeyList)
+	key = KeyList[idx]
 	local input1 = Recipes[key].input[1] or ""
 	local input2 = Recipes[key].input[2] or ""
 	local input3 = Recipes[key].input[3] or ""
