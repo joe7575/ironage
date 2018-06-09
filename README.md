@@ -1,4 +1,4 @@
-# Iron Age
+# Iron Age V0.02
 
 Melting Pot for ingot/alloy smelting with coal burner and charcoal production.
 
@@ -41,12 +41,15 @@ Meridium is a glowing metal alloy to produce glowing tools.
 If the mod 'unified_inventory' is installed, the recipes are also available via the unified_inventory crafting guide.
 
 
-## Dependencies
+### Dependencies
 default, fire, farming  
 Optional: intllib, wielded_light, unified_inventory
 
-# License
+### License
 Copyright (C) 2018 Joachim Stolberg  
 Code: Licensed under the GNU LGPL version 2.1 or later. See LICENSE.txt and http://www.gnu.org/licenses/lgpl-2.1.txt  
 Textures: CC0
 
+### History
+- 2018-05-29  V0.01  * First version  
+- 2018-06-09  V0.02  * Further recipes added  

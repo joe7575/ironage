@@ -18,6 +18,22 @@ ironage.register_recipe({
 })
 
 ironage.register_recipe({
+	output = "default:lava_source", 
+	recipe = {"default:cobble"}, 
+	heat = 8,
+	time = 8,
+})
+
+ironage.register_recipe({
+	output = "default:bronze_ingot 4", 
+	recipe = {"default:copper_ingot", "default:copper_ingot", "default:copper_ingot", "default:tin_ingot"}, 
+	heat = 4,
+	time = 8,
+})
+
+minetest.clear_craft({output = "default:bronze_ingot"})
+
+ironage.register_recipe({
 	output = "default:steel_ingot 4", 
 	recipe = {"default:coal_lump", "default:iron_lump", "default:iron_lump", "default:iron_lump"}, 
 	heat = 4,

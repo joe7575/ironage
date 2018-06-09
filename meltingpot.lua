@@ -212,7 +212,7 @@ end
 -- generate an unique key based on the unsorted and
 -- variable number of inventory items
 local function recipe_key(items)
-	tbl = {}
+	local tbl = {}
 	-- remove items which exist more than once
 	for _,item in ipairs(items) do
 		tbl[item] = true
@@ -524,7 +524,7 @@ minetest.register_node("ironage:meltingpot", {
 minetest.register_craft({
 	output = "ironage:meltingpot",
 	recipe = {
-		{"default:cobble", "default:bronze_ingot", "default:cobble"},
+		{"default:cobble", "default:copper_ingot", "default:cobble"},
 		{"default:cobble", "",                     "default:cobble"},
 		{"default:cobble", "default:cobble",       "default:cobble"},
 	},
