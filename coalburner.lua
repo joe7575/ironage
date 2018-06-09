@@ -53,7 +53,7 @@ local function flame(pos, height, heat, first_time)
 	pos = {x=pos.x, y=pos.y+height, z=pos.z}
 	for idx=heat,1,-1 do
 		pos = {x=pos.x, y=pos.y+1, z=pos.z}
-		idx = math.min(idx, 7)
+		idx = math.min(idx, 12)
 		local node = minetest.get_node(pos)
 		if node.name == "ironage:meltingpot_active" then
 			return
