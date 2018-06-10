@@ -18,13 +18,6 @@ ironage.register_recipe({
 })
 
 ironage.register_recipe({
-	output = "default:lava_source", 
-	recipe = {"default:cobble"}, 
-	heat = 8,
-	time = 8,
-})
-
-ironage.register_recipe({
 	output = "default:bronze_ingot 4", 
 	recipe = {"default:copper_ingot", "default:copper_ingot", "default:copper_ingot", "default:tin_ingot"}, 
 	heat = 4,

@@ -66,7 +66,7 @@ local function flame(pos, height, heat, first_time)
 			end
 			return
 		end
-		minetest.add_node(pos, {name = "ironage:flame"..idx})
+		minetest.add_node(pos, {name = "ironage:flame"..math.min(idx,7)})
 		local meta = minetest.get_meta(pos)
 		meta:set_int("heat", idx)
 	end
