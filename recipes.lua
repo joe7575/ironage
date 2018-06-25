@@ -35,3 +35,15 @@ ironage.register_recipe({
 
 minetest.clear_craft({output = "default:steel_ingot"})
 
+
+-- Change the recipe for flint_and_steel, 
+-- without steel, the coal burner can not be lit.
+
+minetest.clear_craft({output = "fire:flint_and_steel"})
+
+minetest.register_craft({
+	output = "fire:flint_and_steel",
+	recipe = {
+		{"default:flint", "default:copper_ingot"}
+	}
+})
