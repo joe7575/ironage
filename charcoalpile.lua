@@ -60,7 +60,7 @@ local function start_smoke(pos)
 
 	if id ~= 0 then
 		minetest.delete_particlespawner(id)
-		meta:set_int("smoke", nil)
+		meta:set_int("smoke", 0)
 	end
 
 	if above == "air" then
