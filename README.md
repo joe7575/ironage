@@ -1,4 +1,4 @@
-# Iron Age V0.02
+# Iron Age V0.03
 
 Melting Pot for ingot/alloy smelting with coal burner and charcoal production.
 
@@ -53,3 +53,4 @@ Textures: CC0
 ### History
 - 2018-05-29  V0.01  * First version  
 - 2018-06-09  V0.02  * Further recipes added  
+- 2018-07-01  V0.03  * Minetest 0.5.0 bugfixes  

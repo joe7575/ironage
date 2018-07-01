@@ -158,7 +158,7 @@ function ironage.keep_running_burner(pos)
 	local handle = meta:get_int("handle")
 	if handle then
 		minetest.sound_stop(handle)
-		meta:set_int("handle", nil)
+		meta:set_int("handle", 0)
 	end
 	if num_cobble(pos, height) == height * 8 then
 		local new_height = num_coal(pos)
