@@ -84,7 +84,7 @@ local function stop_smoke(pos)
 	if id ~= 0 then
 		minetest.delete_particlespawner(id)
 	end
-	meta:set_int("smoke", nil)
+	meta:set_int("smoke", 0)
 end
 
 -- replace wood by burning coal
