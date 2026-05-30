@@ -98,7 +98,7 @@ for idx,ratio in ipairs(lRatio) do
 			end
 		end,
 		
-		use_texture_alpha = true,
+		use_texture_alpha = "blend",
 		inventory_image = "ironage_flame.png",
 		paramtype = "light",
 		light_source = 13,

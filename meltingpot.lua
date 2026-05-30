@@ -390,7 +390,7 @@ minetest.register_node("ironage:meltingpot_active", {
 	description = S("Melting Pot"),
 	tiles = {
 		{
-			image = "ironage_meltingpot_top_active.png",
+			name = "ironage_meltingpot_top_active.png",
 			backface_culling = false,
 			animation = {
 				type = "vertical_frames",
