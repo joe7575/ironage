@@ -10,9 +10,8 @@
 
 ]]--
 
--- Load support for intllib.
-local MP = minetest.get_modpath("ironage")
-local S, NS = dofile(MP.."/intllib.lua")
+-- Load support for I18n.
+local S = minetest.get_translator("ironage")
 
 local SMELTING_TIME = 2
 
@@ -286,25 +285,25 @@ function ironage.switch_to_active(pos)
 	if recipe and heat >= recipe.heat then
 		minetest.swap_node(pos, {name = "ironage:meltingpot_active"})
 		minetest.registered_nodes["ironage:meltingpot_active"].on_construct(pos)
-		meta:set_string("infotext", S("Melting Pot active (heat=")..heat..")")
+		meta:set_string("infotext", S("Melting Pot active (heat=@1)", heat))
 		minetest.get_node_timer(pos):start(2)
 		return true
 	end
-	meta:set_string("infotext", S("Melting Pot inactive (heat=")..heat..")")
+	meta:set_string("infotext", S("Melting Pot inactive (heat=@1)", heat))
 	return false
-end	
+end
 
 function ironage.update_heat(pos)
 	local meta = minetest.get_meta(pos)
 	local heat = get_heat(pos)
-	meta:set_string("infotext", S("Melting Pot inactive (heat=")..heat..")")
-end	
+	meta:set_string("infotext", S("Melting Pot inactive (heat=@1)", heat))
+end
 
 local function set_inactive(meta, pos, heat)
 	minetest.get_node_timer(pos):stop()
 	minetest.swap_node(pos, {name = "ironage:meltingpot"})
 	minetest.registered_nodes["ironage:meltingpot"].on_construct(pos)
-	meta:set_string("infotext", S("Melting Pot inactive (heat=")..heat..")")
+	meta:set_string("infotext", S("Melting Pot inactive (heat=@1)", heat))
 end
 
 -- Stop melting if heat to low OR no source items available
@@ -318,9 +317,9 @@ local function switch_to_inactive(pos)
 		set_inactive(meta, pos, heat)
 		return true
 	end
-	meta:set_string("infotext", S("Melting Pot active (heat=")..heat..")")
+	meta:set_string("infotext", S("Melting Pot active (heat=@1)", heat))
 	return false
-end	
+end
 
 
 local function index(list, x)

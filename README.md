@@ -1,4 +1,4 @@
-# Iron Age V0.03
+# Iron Age V0.04
 
 Melting Pot for ingot/alloy smelting with coal burner and charcoal production.
 
@@ -43,7 +43,7 @@ If the mod 'unified_inventory' is installed, the recipes are also available via 
 
 ### Dependencies
 default, fire, farming  
-Optional: intllib, wielded_light, unified_inventory
+Optional: wielded_light, unified_inventory
 
 ### License
 Copyright (C) 2018 Joachim Stolberg  
@@ -51,6 +51,7 @@ Code: Licensed under the GNU LGPL version 2.1 or later. See LICENSE.txt and http
 Textures: CC0
 
 ### History
-- 2018-05-29  V0.01  * First version  
-- 2018-06-09  V0.02  * Further recipes added  
-- 2018-07-01  V0.03  * Minetest 0.5.0 bugfixes  
+- 2018-05-29  V0.01  * First version
+- 2018-06-09  V0.02  * Further recipes added
+- 2018-07-01  V0.03  * Minetest 0.5.0 bugfixes
+- 2026-06-09  V0.04  * Migrated from intllib to native get_translator / .tr locale files

@@ -1,0 +1,23 @@
+# textdomain: ironage
+Dirt with Ash=
+Charcoal=
+Ash=
+Lighter=
+Menu,Recipes,Pile,Burner=
+Menu=
+Melting Guide=
+Heat=
+Time=
+Cross-section=
+Melting Pot active (heat@=@1)=
+Melting Pot inactive (heat@=@1)=
+Melting Pot=
+Melting Pot inactive (heat@=0)=
+Melting=
+Burning=
+Coal Pile to produce charcoal:@n- build a 5x5 block dirt base@n- place a lighter in the centre@n- build a 3x3x3 wood cube around@n- cover all with dirt to a 5x5x5 cube@n- keep a hole to the lighter@n- ignite the lighter and immediately@n- close the pile with one wood and one dirt@n- open the pile after the smoke disappeared=
+Coal Burner to heat the melting pot:@n- build a 3x3xN cobble tower@n- more height means more flame heat   @n- keep a hole open on one side@n- put a lighter in@n- fill the tower from the top with charcoal@n- ignite the lighter@n- place the pot in the flame=
+Meridium Pickaxe=
+Meridium Shovel=
+Meridium Axe=
+Meridium Sword=

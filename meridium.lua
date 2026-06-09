@@ -11,9 +11,8 @@
 
 ]]--
 
--- Load support for intllib.
-local MP = minetest.get_modpath("ironage")
-local S, NS = dofile(MP.."/intllib.lua")
+-- Load support for I18n.
+local S = minetest.get_translator("ironage")
 
 
 minetest.register_craftitem("ironage:meridium_ingot", {

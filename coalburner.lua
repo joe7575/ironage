@@ -10,9 +10,8 @@
 
 ]]--
 
--- Load support for intllib.
-local MP = minetest.get_modpath("ironage")
-local S, NS = dofile(MP.."/intllib.lua")
+-- Load support for I18n.
+local S = minetest.get_translator("ironage")
 
 local function num_coal(pos)
 	local pos1 = {x=pos.x, y=pos.y+1, z=pos.z}

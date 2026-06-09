@@ -10,9 +10,8 @@
 
 ]]--
 
--- Load support for intllib.
-local MP = minetest.get_modpath("ironage")
-local S, NS = dofile(MP.."/intllib.lua")
+-- Load support for I18n.
+local S = minetest.get_translator("ironage")
 
 local PILE_BURN_TIME = 1200
 local COAL_BURN_TIME = 700

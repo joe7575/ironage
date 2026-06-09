@@ -14,11 +14,12 @@
 
 ]]--
 
--- Load support for intllib.
+-- Load support for I18n.
 local MP = minetest.get_modpath("ironage")
-local S, NS = dofile(MP.."/intllib.lua")
+local S = minetest.get_translator("ironage")
 
 ironage = {}
+ironage.S = S
 
 function ironage.swap_node(pos, name)
 	minetest.swap_node(pos, {name = name})
